@@ -12,6 +12,8 @@ import SessionProductOrderBox from "../SessionProductOrderBox/SessionProductOrde
 import useCheckMe from "@/hooks/Checkme";
 import useProduct from "@/hooks/shop/useProduct";
 import useProductImages from "@/hooks/shop/useProductImages";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
 
 import {
     Star,
@@ -130,11 +132,7 @@ export default function ProductDetail({
         imagesLoading
     ) {
 
-        return (
-            <h2>
-                Loading...
-            </h2>
-        );
+        return <Skeleton count={6} />;
 
     }
 
@@ -150,12 +148,14 @@ export default function ProductDetail({
     ) {
 
         return (
-            <h2>
-                Failed to load product.
-            </h2>
+            <ErrorState
+                message="Failed to load product."
+            />
         );
 
     }
+
+    
 
 
     // ==========================================
