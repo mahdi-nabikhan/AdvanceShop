@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import "./ShopDetail.css";
-
+import ErrorState from "@/components/commen/ErrorState";
 import { getStoreDetail } from "@/services/shop.services";
 
 
@@ -45,12 +45,17 @@ export default async function ShopDetail({
         shop = await getStoreDetail(shopId);
 
     } catch (error) {
+    if (error) {
+    console.error("Failed to load store:", error);
 
-        console.error(
-            "Failed to load store:",
-            error
-        );
+    return (
+        <section className="store-page">
+            <ErrorState message="Failed to load store." />
+        </section>
+    );
+}
 
+        
         return (
 
             <section className="store-page">

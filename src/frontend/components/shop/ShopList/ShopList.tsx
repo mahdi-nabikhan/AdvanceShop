@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import useStores from "@/hooks/shop/useStores";
 
 import Pagination from "@/components/commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import BACKEND_URLS from "@/utils";
 
@@ -35,19 +38,14 @@ export default function ShopList({
     if (isLoading) {
 
         return (
-
             <section className="shop-list container">
 
-                <p>
-                    Loading shops...
-                </p>
+                <Skeleton count={8} />
 
             </section>
-
         );
 
     }
-
 
     // ==========================================
     // Error
@@ -56,15 +54,31 @@ export default function ShopList({
     if (isError || !data) {
 
         return (
-
             <section className="shop-list container">
 
-                <p>
-                    Error loading shops.
-                </p>
+                <ErrorState
+                    message="Error loading shops."
+                />
 
             </section>
+        );
 
+    }
+
+    // ==========================================
+    // Empty
+    // ==========================================
+
+    if (data.results.length === 0) {
+
+        return (
+            <section className="shop-list container">
+
+                <EmptyState
+                    message="No shops found."
+                />
+
+            </section>
         );
 
     }
