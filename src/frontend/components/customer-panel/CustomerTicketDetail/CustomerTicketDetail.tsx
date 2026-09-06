@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -14,13 +15,16 @@ import {
 import Link from "next/link";
 
 import useCustomerTicketDetail from "@/hooks/customer/useCustomerTicketDetail";
-    
 
 import EditTicketModal
     from "../EditTicketModal/EditTicketModal";
 
 import DeleteTicketModal
     from "../DeleteTicketModal/DeleteTicketModal";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import "./CustomerTicketDetail.css";
 
@@ -58,7 +62,7 @@ export default function CustomerTicketDetail({
 
         return (
             <div className="ticket-loading">
-                Loading...
+                <Skeleton count={4} />
             </div>
         );
 
@@ -73,7 +77,9 @@ export default function CustomerTicketDetail({
 
         return (
             <div className="ticket-loading">
-                Failed to load ticket.
+                <ErrorState
+                    message="Failed to load ticket."
+                />
             </div>
         );
 
@@ -88,7 +94,9 @@ export default function CustomerTicketDetail({
 
         return (
             <div className="ticket-loading">
-                Ticket Not Found
+                <EmptyState
+                    message="Ticket not found."
+                />
             </div>
         );
 
@@ -294,7 +302,6 @@ export default function CustomerTicketDetail({
                 }
 
                 ticket={ticket}
-
 
             />
 

@@ -6,6 +6,10 @@ import ChangePasswordModal from "@/components/auth/ChangePasswordModal/ChangePas
 
 import useCustomerProfile from "@/hooks/customer/useCustomerProfile";
 
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import "./CustomerProfile.css";
 
 export default function CustomerProfile() {
@@ -110,13 +114,9 @@ export default function CustomerProfile() {
     if (isLoading) {
 
         return (
-
             <div className="customer-profile-loading">
-
-                Loading profile...
-
+                <Skeleton count={4} />
             </div>
-
         );
 
     }
@@ -129,27 +129,33 @@ export default function CustomerProfile() {
     if (isError && !profile) {
 
         return (
-
             <div className="customer-profile-error">
 
-                <p>
-                    Failed to load profile.
-                </p>
+                <ErrorState
+                    message="Failed to load profile."
+                />
 
                 <button onClick={() => refetch()}>
                     Try Again
                 </button>
 
             </div>
-
         );
 
     }
 
 
+    // ==========================================
+    // Profile Not Found
+    // ==========================================
+
     if (!profile) {
 
-        return null;
+        return (
+            <div className="customer-profile-error">
+                <EmptyState message="Profile not found." />
+            </div>
+        );
 
     }
 

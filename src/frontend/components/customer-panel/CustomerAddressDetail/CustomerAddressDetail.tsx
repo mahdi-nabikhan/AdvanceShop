@@ -3,6 +3,10 @@ import EditAddressModal from "../EditAddressModal/EditAddressModal";
 import DeleteAddressModal from "../DeleteAddressModal/DeleteAddressModal";
 import useAddress from "@/hooks/customer/useAddress";
 import { useState } from "react";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 
 import {MapPin,} from "lucide-react";
 
@@ -23,57 +27,35 @@ export default function CustomerAddressDetail({addressId}: Props) {
         isError,
     } = useAddress(addressId);
 
+    if (isLoading) {
+        return (
+            <div className="address-detail-loading">
+                <Skeleton count={4} />
+            </div>
+        );
+    }
 
     if (isError) {
         return (
             <div className="address-detail-loading">
-                Failed to load address.
+                <ErrorState
+                    message="Failed to load address."
+                />
             </div>
         );
     }
-
-
-    if (isLoading) {
-        return (
-            <div className="address-detail-loading">
-                Loading Address...
-            </div>
-        );
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     if (!address) {
-
-
         return (
-
             <div className="address-detail-loading">
-
-                Loading Address...
-
+                <EmptyState
+                    message="Address not found."
+                />
             </div>
-
-        )
-
-
+        );
     }
 
-
-
+   
 
 
 
