@@ -10,6 +10,9 @@ import { getProductComments } from "@/services/comment.services";
 
 import CommentCard from "../CommentCard/CommentCard";
 import Pagination from "../../../commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 
 interface IUser {
@@ -53,6 +56,7 @@ export default function CommentList({
     const {
         data,
         isLoading,
+        isError,
         isFetching,
     } = useQuery<IResponse>({
         queryKey: [
@@ -69,6 +73,25 @@ export default function CommentList({
 
         placeholderData: keepPreviousData,
     });
+
+
+    if (isLoading) {
+        return <Skeleton count={4} />;
+    }
+
+    if (isError) {
+        return (
+            <ErrorState message="Error loading comments." />
+        );
+    }
+
+    const comments = data?.results ?? [];
+
+    if (comments.length === 0) {
+        return (
+            <EmptyState message="No comments found." />
+        );
+    }
 
 
 
