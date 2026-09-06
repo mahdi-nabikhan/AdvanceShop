@@ -7,7 +7,9 @@ import "./ProductList.css";
 
 import useStoreProducts from "@/hooks/shop/useStoreProducts";
 import Pagination from "@/components/commen/Paginations";
-
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 interface ProductListProps {
   shopId: string;
@@ -31,15 +33,22 @@ export default function ProductList({
 
 
   if (isLoading) {
-    return <p>Loading products...</p>;
+     return <Skeleton count={8} />;
   }
 
   if (isError) {
-    return <p>Error loading products.</p>;
+    <ErrorState message="Error loading products." />
   }
 
 
   const products = data?.results ?? [];
+
+   if (products.length === 0) {
+    return (
+      <EmptyState message="No products found." />
+    );
+  }
+
 
 
   return (
