@@ -23,20 +23,21 @@ import { useRouter } from "next/navigation";
 import DeleteModal from "../DeleteModal/DeleteModal";
 import UpdateAdminModal from "../UpdateAdminModal/UpdateAdminModal";
 
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import "./AdminDetail.css";
 
 
 interface Props {
-
     adminId: number | string;
-
 }
 
 
 export default function AdminDetail({
     adminId,
 }: Props) {
-
 
     const [showDelete, setShowDelete] =
         useState(false);
@@ -85,10 +86,10 @@ export default function AdminDetail({
             onSuccess: () => {
 
                 queryClient.invalidateQueries({
-
-                    queryKey:
-                        shopAdminQueryKeys.admins(),
-
+                    queryKey: [
+                        "shop-admin",
+                        "admins",
+                    ],
                 });
 
                 router.push(
@@ -156,10 +157,10 @@ export default function AdminDetail({
                 // Update admin list cache
 
                 queryClient.invalidateQueries({
-
-                    queryKey:
-                        shopAdminQueryKeys.admins(),
-
+                    queryKey: [
+                        "shop-admin",
+                        "admins",
+                    ],
                 });
 
 
@@ -186,9 +187,9 @@ export default function AdminDetail({
     if (loading) {
 
         return (
-            <h2>
-                Loading...
-            </h2>
+            <div className="admin-detail-page">
+                <Skeleton count={4} />
+            </div>
         );
 
     }
@@ -198,12 +199,31 @@ export default function AdminDetail({
     // Error
     // ==========================================
 
-    if (isError || !admin) {
+    if (isError) {
 
         return (
-            <h2>
-                Admin Not Found
-            </h2>
+            <div className="admin-detail-page">
+                <ErrorState
+                    message="Failed to load admin."
+                />
+            </div>
+        );
+
+    }
+
+
+    // ==========================================
+    // Not Found
+    // ==========================================
+
+    if (!admin) {
+
+        return (
+            <div className="admin-detail-page">
+                <EmptyState
+                    message="Admin not found."
+                />
+            </div>
         );
 
     }

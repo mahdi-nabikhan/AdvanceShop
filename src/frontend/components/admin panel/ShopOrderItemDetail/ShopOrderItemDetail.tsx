@@ -1,45 +1,77 @@
+
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {getOrderItemDetail,} from "@/services/shop-admin-panel.services";
-import "./ShopOrderItemDetail.css";
+
+import {
+    getOrderItemDetail,
+} from "@/services/shop-admin-panel.services";
+
 import BACKEND_URLS from "@/utils";
-import { shopAdminQueryKeys } from "@/Lib/query-keys/shopadmin.keys";
 
+import {
+    shopAdminQueryKeys,
+} from "@/Lib/query-keys/shopadmin.keys";
 
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
+import "./ShopOrderItemDetail.css";
 
 
 interface Props {
     orderItemId: number | string;
 }
 
-export default function OrderItemDetail({ orderItemId }: Props) {
+
+export default function OrderItemDetail({
+    orderItemId,
+}: Props) {
+
     const {
-    data: item,
-    isLoading,
-    isError,
-} = useQuery({
-    queryKey:  shopAdminQueryKeys.orderItem(orderItemId),
-    queryFn: () => getOrderItemDetail(orderItemId),
-});
+        data: item,
+        isLoading,
+        isError,
+    } = useQuery({
+        queryKey:
+            shopAdminQueryKeys.orderItem(orderItemId),
 
+        queryFn: () =>
+            getOrderItemDetail(orderItemId),
+    });
 
-    
-    
 
     if (isLoading) {
-        return <h2>Loading...</h2>;
+        return (
+            <div className="order-item-detail">
+                <Skeleton count={4} />
+            </div>
+        );
     }
 
 
     if (isError) {
-        return <h2>ERROR...</h2>;
+        return (
+            <div className="order-item-detail">
+                <ErrorState
+                    message="Failed to load order item."
+                />
+            </div>
+        );
     }
 
+
     if (!item) {
-        return <h2>Order Item Not Found</h2>;
+        return (
+            <div className="order-item-detail">
+                <EmptyState
+                    message="Order item not found."
+                />
+            </div>
+        );
     }
+
 
     return (
 
@@ -58,12 +90,15 @@ export default function OrderItemDetail({ orderItemId }: Props) {
                             : "confirmed"
                     }
                 >
-                    {item.status === "P"
-                        ? "Pending"
-                        : "Confirmed"}
+                    {
+                        item.status === "P"
+                            ? "Pending"
+                            : "Confirmed"
+                    }
                 </span>
 
             </div>
+
 
             <div className="detail-card">
 
@@ -80,63 +115,128 @@ export default function OrderItemDetail({ orderItemId }: Props) {
 
                 </div>
 
+
                 <div className="info-box">
 
-                    <h2>{item.product.name}</h2>
+                    <h2>
+                        {item.product.name}
+                    </h2>
 
-                    <p>{item.product.description}</p>
+                    <p>
+                        {item.product.description}
+                    </p>
+
 
                     <div className="info-grid">
 
                         <div>
-                            <span>Product ID</span>
-                            <strong>{item.product.id}</strong>
-                        </div>
+                            <span>
+                                Product ID
+                            </span>
 
-                        <div>
-                            <span>Order ID</span>
-                            <strong>{item.order}</strong>
-                        </div>
-
-                        <div>
-                            <span>Quantity</span>
-                            <strong>{item.quantity}</strong>
-                        </div>
-
-                        <div>
-                            <span>Price</span>
-                            <strong>${item.product.price}</strong>
-                        </div>
-
-                        <div>
-                            <span>Sale Price</span>
-                            <strong>${item.product.price_after}</strong>
-                        </div>
-
-                        <div>
-                            <span>Total</span>
-                            <strong>${item.total}</strong>
-                        </div>
-
-                        <div>
-                            <span>Stock</span>
-                            <strong>{item.product.quantity_in_stock}</strong>
-                        </div>
-
-                        <div>
-                            <span>Category</span>
-                            <strong>{item.product.category}</strong>
-                        </div>
-
-                        <div>
-                            <span>Store</span>
-                            <strong>{item.product.store}</strong>
-                        </div>
-
-                        <div>
-                            <span>Created</span>
                             <strong>
-                                {new Date(item.created).toLocaleString()}
+                                {item.product.id}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Order ID
+                            </span>
+
+                            <strong>
+                                {item.order}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Quantity
+                            </span>
+
+                            <strong>
+                                {item.quantity}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Price
+                            </span>
+
+                            <strong>
+                                ${item.product.price}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Sale Price
+                            </span>
+
+                            <strong>
+                                ${item.product.price_after}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Total
+                            </span>
+
+                            <strong>
+                                ${item.total}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Stock
+                            </span>
+
+                            <strong>
+                                {item.product.quantity_in_stock}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Category
+                            </span>
+
+                            <strong>
+                                {item.product.category}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Store
+                            </span>
+
+                            <strong>
+                                {item.product.store}
+                            </strong>
+                        </div>
+
+
+                        <div>
+                            <span>
+                                Created
+                            </span>
+
+                            <strong>
+                                {new Date(
+                                    item.created
+                                ).toLocaleString()}
                             </strong>
                         </div>
 
@@ -147,7 +247,6 @@ export default function OrderItemDetail({ orderItemId }: Props) {
             </div>
 
         </div>
-
     );
-
 }
+

@@ -1,9 +1,14 @@
+
 "use client";
 
 import { useState } from "react";
 
 import useOperators from "@/hooks/admin-panel/useOperator";
 import Pagination from "@/components/commen/Paginations";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import "./OperatorList.css";
 
@@ -26,12 +31,22 @@ export default function OperatorList() {
 
 
     if (isLoading) {
-        return <h2>Loading...</h2>;
+        return (
+            <div className="operator-page">
+                <Skeleton count={8} />
+            </div>
+        );
     }
 
 
     if (isError) {
-        return <h2>Failed to load operators.</h2>;
+        return (
+            <div className="operator-page">
+                <ErrorState
+                    message="Failed to load operators."
+                />
+            </div>
+        );
     }
 
 
@@ -39,7 +54,13 @@ export default function OperatorList() {
 
 
     if (operators.length === 0) {
-        return <h2>No Operator Found</h2>;
+        return (
+            <div className="operator-page">
+                <EmptyState
+                    message="No operators found."
+                />
+            </div>
+        );
     }
 
 
@@ -60,76 +81,71 @@ export default function OperatorList() {
 
             <div className="operator-list">
 
-                {
-                    operators.map((operator) => (
+                {operators.map((operator) => (
 
-                        <div
-                            className="operator-card"
-                            key={operator.id}
-                        >
+                    <div
+                        className="operator-card"
+                        key={operator.id}
+                    >
 
-                            <div className="avatar">
+                        <div className="avatar">
 
-                                {
-                                    operator.user.email
-                                        .charAt(0)
-                                        .toUpperCase()
-                                }
-
-                            </div>
-
-
-                            <div className="operator-info">
-
-                                <h2>
-                                    {
-                                        operator.username ||
-                                        "No Username"
-                                    }
-                                </h2>
-
-                                <span>
-                                    {operator.user.email}
-                                </span>
-
-                            </div>
-
-
-                            <div className="operator-badge">
-
-                                Operator
-
-                            </div>
+                            {
+                                operator.user.email
+                                    .charAt(0)
+                                    .toUpperCase()
+                            }
 
                         </div>
 
-                    ))
-                }
+
+                        <div className="operator-info">
+
+                            <h2>
+                                {
+                                    operator.username ||
+                                    "No Username"
+                                }
+                            </h2>
+
+                            <span>
+                                {operator.user.email}
+                            </span>
+
+                        </div>
+
+
+                        <div className="operator-badge">
+                            Operator
+                        </div>
+
+                    </div>
+
+                ))}
 
             </div>
 
 
-            {
-                data && (
-                    <Pagination
-                        next={data.links.next}
-                        previous={data.links.previous}
-                        loading={isFetching}
-                        onNext={() =>
-                            setPage(
-                                (prev) => prev + 1
-                            )
-                        }
-                        onPrevious={() =>
-                            setPage(
-                                (prev) => prev - 1
-                            )
-                        }
-                    />
-                )
-            }
+            {data && (
+                <Pagination
+                    next={data.links.next}
+                    previous={data.links.previous}
+                    loading={isFetching}
+                    onNext={() =>
+                        setPage(
+                            (prev) => prev + 1
+                        )
+                    }
+                    onPrevious={() =>
+                        setPage(
+                            (prev) => prev - 1
+                        )
+                    }
+                />
+            )}
 
         </div>
 
     );
 }
+

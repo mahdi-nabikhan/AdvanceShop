@@ -1,55 +1,144 @@
+
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getStoreConversations } from "@/services/shop-admin-panel.services";
-import { Conversation } from "@/types/panel-admin";
+
+import {
+    getStoreConversations,
+} from "@/services/shop-admin-panel.services";
+
+import {
+    Conversation,
+} from "@/types/panel-admin";
+
+import {
+    shopAdminQueryKeys,
+} from "@/Lib/query-keys/shopadmin.keys";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import "./ListConversation.css";
-import { shopAdminQueryKeys } from "@/Lib/query-keys/shopadmin.keys";
+
 
 interface Props {
     selectedConversation: number | null;
-    onSelectConversation: (conversationId: number) => void;
+    onSelectConversation: (
+        conversationId: number
+    ) => void;
 }
 
-export default function ConversationList({onSelectConversation,}: Props) {
-    const {data: conversations = [],isLoading,isError,} = useQuery({
-    queryKey: shopAdminQueryKeys.conversations(),
-    queryFn: getStoreConversations,});
-    
+
+export default function ConversationList({
+    onSelectConversation,
+}: Props) {
+
+    const {
+        data: conversations = [],
+        isLoading,
+        isError,
+    } = useQuery<Conversation[]>({
+
+        queryKey:
+            shopAdminQueryKeys.conversations(),
+
+        queryFn:
+            getStoreConversations,
+
+    });
+
+
+    // ==========================================
+    // Loading
+    // ==========================================
 
     if (isLoading) {
 
         return (
+
             <aside className="conversation-list">
 
-                <div className="conversation-loading">
-                    Loading conversations...
-                </div>
+                <Skeleton count={5} />
 
             </aside>
+
         );
 
     }
 
+
+    // ==========================================
+    // Error
+    // ==========================================
 
     if (isError) {
 
         return (
+
             <aside className="conversation-list">
 
-                <div className="conversation-error">
-                    {isError}
-                </div>
+                <ErrorState
+                    message="Failed to load conversations."
+                />
 
             </aside>
+
         );
 
     }
 
 
+    // ==========================================
+    // Empty
+    // ==========================================
+
+    if (conversations.length === 0) {
+
+        return (
+
+            <aside className="conversation-list">
+
+                <div className="conversation-list-header">
+
+                    <div>
+
+                        <h2>
+                            Messages
+                        </h2>
+
+                        <span>
+                            0 conversations
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div className="conversation-items">
+
+                    <EmptyState
+                        message="No conversations yet."
+                    />
+
+                </div>
+
+            </aside>
+
+        );
+
+    }
+
+
+    // ==========================================
+    // UI
+    // ==========================================
+
     return (
 
         <aside className="conversation-list">
+
 
             <div className="conversation-list-header">
 
@@ -59,8 +148,13 @@ export default function ConversationList({onSelectConversation,}: Props) {
                         Messages
                     </h2>
 
+
                     <span>
-                        {conversations.length} conversations
+
+                        {
+                            conversations.length
+                        } conversations
+
                     </span>
 
                 </div>
@@ -70,68 +164,75 @@ export default function ConversationList({onSelectConversation,}: Props) {
 
             <div className="conversation-items">
 
-                {conversations.length === 0 ? (
+                {
+                    conversations.map(
+                        (conversation) => (
 
-                    <div className="empty-conversations">
-
-                        <p>
-                            No conversations yet.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    conversations.map((conversation) => (
-
-                        <button
-                            key={conversation.id}
-                            type="button"
-                            className="conversation-item"
-                            onClick={() =>
-                                onSelectConversation(
+                            <button
+                                key={
                                     conversation.id
-                                )
-                            }
-                        >
+                                }
+                                type="button"
+                                className="conversation-item"
+                                onClick={() =>
+                                    onSelectConversation(
+                                        conversation.id
+                                    )
+                                }
+                            >
 
-                            <div className="conversation-avatar">
+                                <div className="conversation-avatar">
 
-                                C
-
-                            </div>
-
-
-                            <div className="conversation-info">
-
-                                <div className="conversation-top">
-
-                                    <strong>
-                                        Customer #{conversation.customer}
-                                    </strong>
-
-                                    <span>
-                                        #{conversation.id}
-                                    </span>
+                                    C
 
                                 </div>
 
 
-                                <div className="conversation-bottom">
+                                <div className="conversation-info">
 
-                                    <span>
-                                        {conversation.status}
-                                    </span>
+                                    <div className="conversation-top">
+
+                                        <strong>
+
+                                            Customer #
+                                            {
+                                                conversation.customer
+                                            }
+
+                                        </strong>
+
+
+                                        <span>
+
+                                            #
+                                            {
+                                                conversation.id
+                                            }
+
+                                        </span>
+
+                                    </div>
+
+
+                                    <div className="conversation-bottom">
+
+                                        <span>
+
+                                            {
+                                                conversation.status
+                                            }
+
+                                        </span>
+
+                                    </div>
 
                                 </div>
 
-                            </div>
+                            </button>
 
-                        </button>
-
-                    ))
-
-                )}
+                        )
+                    )
+                }
 
             </div>
 

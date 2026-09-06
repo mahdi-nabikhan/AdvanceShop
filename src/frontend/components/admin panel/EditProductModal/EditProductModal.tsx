@@ -1,10 +1,19 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
-import {useMutation,useQueryClient,} from "@tanstack/react-query";
+
+import {
+    useMutation,
+    useQueryClient,
+} from "@tanstack/react-query";
+
 import { updateProduct } from "@/services/shop-admin-panel.services";
-import { shopAdminQueryKeys } from "@/Lib/query-keys/shopadmin.keys";
+
+
+
 import "./EditProductModal.css";
+
 
 interface Product {
     id: number;
@@ -18,18 +27,18 @@ interface Product {
     store: number;
 }
 
+
 interface Props {
     open: boolean;
     onClose: () => void;
     product: Product;
-   
 }
+
 
 export default function EditProductModal({
     open,
     onClose,
     product,
-   
 }: Props) {
 
     const [name, setName] = useState("");
@@ -42,91 +51,177 @@ export default function EditProductModal({
 
     const [category, setCategory] = useState("");
 
-    const [image, setImage] = useState<File | null>(null);
+    const [image, setImage] =
+        useState<File | null>(null);
 
-    const [preview, setPreview] = useState("");
+    const [preview, setPreview] =
+        useState("");
 
-    const queryClient = useQueryClient();
 
-const updateMutation = useMutation({
-    mutationFn: ({
-        productId,
-        formData,
-    }: {
-        productId: number;
-        formData: FormData;
-    }) => updateProduct(productId, formData),
+    const queryClient =
+        useQueryClient();
 
-    onSuccess: () => {
-        queryClient.invalidateQueries({
-            queryKey: shopAdminQueryKeys.products(),
-        });
 
-        queryClient.invalidateQueries({
-            queryKey: shopAdminQueryKeys.products()
-        });
+    // ==========================================
+    // Update Product
+    // ==========================================
 
-        onClose();
-    },
+    const updateMutation = useMutation({
 
-    onError: (err) => {
-        console.log(err);
-    },
-});
+        mutationFn: ({
+            productId,
+            formData,
+        }: {
+            productId: number;
+            formData: FormData;
+        }) =>
+            updateProduct(
+                productId,
+                formData
+            ),
 
-  
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "shop-admin",
+                    "products",
+                ],
+            });
+
+            onClose();
+
+        },
+
+        onError: (err) => {
+
+            console.error(
+                "Update product error:",
+                err
+            );
+
+        },
+
+    });
+
+
+    // ==========================================
+    // Set Product Data
+    // ==========================================
+
     useEffect(() => {
 
-        if (!product) return;
+        if (!product) {
+            return;
+        }
 
         setName(product.name);
-        setDescription(product.description);
 
-        setPrice(product.price.toString());
-        setPriceAfter(product.price_after.toString());
+        setDescription(
+            product.description
+        );
 
-        setStock(product.quantity_in_stock.toString());
+        setPrice(
+            product.price.toString()
+        );
 
-        setCategory(product.category.toString());
+        setPriceAfter(
+            product.price_after.toString()
+        );
 
-        setPreview(product.product_image || "/no-image.png");
+        setStock(
+            product.quantity_in_stock.toString()
+        );
+
+        setCategory(
+            product.category.toString()
+        );
+
+        setPreview(
+            product.product_image ||
+            "/no-image.png"
+        );
 
         setImage(null);
 
     }, [product]);
 
 
+    // ==========================================
+    // Submit
+    // ==========================================
+
     const submitHandler = (
-    e: React.FormEvent
-) => {
-    e.preventDefault();
+        e: React.FormEvent
+    ) => {
 
-    const formData = new FormData();
+        e.preventDefault();
 
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("price_after", priceAfter);
-    formData.append("quantity_in_stock", stock);
-    formData.append("category", category);
+        const formData =
+            new FormData();
 
-    if (image) {
+
         formData.append(
-            "product_image",
-            image
+            "name",
+            name
         );
-    }
 
-    updateMutation.mutate({
-        productId: product.id,
-        formData,
-    });
-};
+        formData.append(
+            "description",
+            description
+        );
+
+        formData.append(
+            "price",
+            price
+        );
+
+        formData.append(
+            "price_after",
+            priceAfter
+        );
+
+        formData.append(
+            "quantity_in_stock",
+            stock
+        );
+
+        formData.append(
+            "category",
+            category
+        );
+
+
+        if (image) {
+
+            formData.append(
+                "product_image",
+                image
+            );
+
+        }
+
+
+        updateMutation.mutate({
+
+            productId: product.id,
+
+            formData,
+
+        });
+
+    };
+
+
+    // ==========================================
+    // Modal
+    // ==========================================
 
     if (!open) {
         return null;
-
     }
+
+
     return (
 
         <div
@@ -136,14 +231,22 @@ const updateMutation = useMutation({
 
             <div
                 className="edit-modal"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) =>
+                    e.stopPropagation()
+                }
             >
+
+                {/* Header */}
 
                 <div className="modal-header">
 
-                    <h2>Edit Product</h2>
+                    <h2>
+                        Edit Product
+                    </h2>
+
 
                     <button
+                        type="button"
                         className="close-btn"
                         onClick={onClose}
                     >
@@ -152,129 +255,200 @@ const updateMutation = useMutation({
 
                 </div>
 
-                <form className="edit-form"
-                    onSubmit={submitHandler}>
+
+                {/* Form */}
+
+                <form
+                    className="edit-form"
+                    onSubmit={submitHandler}
+                >
+
+                    {/* Image Preview */}
 
                     <div className="image-preview">
 
                         <img
                             src={
                                 image
-                                    ? URL.createObjectURL(image)
+                                    ? URL.createObjectURL(
+                                        image
+                                    )
                                     : preview
                             }
-                            alt=""
+                            alt={product.name}
                         />
 
                     </div>
 
+
+                    {/* Image */}
+
                     <div className="form-group">
 
-                        <label>Product Image</label>
+                        <label>
+                            Product Image
+                        </label>
+
 
                         <input
                             type="file"
                             accept="image/*"
                             onChange={(e) => {
 
-                                if (!e.target.files) return;
+                                if (
+                                    !e.target.files ||
+                                    !e.target.files[0]
+                                ) {
+                                    return;
+                                }
 
-                                setImage(e.target.files[0]);
+                                setImage(
+                                    e.target.files[0]
+                                );
 
                             }}
                         />
 
                     </div>
 
+
+                    {/* Name */}
+
                     <div className="form-group">
 
-                        <label>Product Name</label>
+                        <label>
+                            Product Name
+                        </label>
+
 
                         <input
                             type="text"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
-
-                    </div>
-
-                    <div className="form-group">
-
-                        <label>Description</label>
-
-                        <textarea
-                            rows={5}
-                            value={description}
                             onChange={(e) =>
-                                setDescription(e.target.value)
+                                setName(
+                                    e.target.value
+                                )
                             }
                         />
 
                     </div>
 
+
+                    {/* Description */}
+
+                    <div className="form-group">
+
+                        <label>
+                            Description
+                        </label>
+
+
+                        <textarea
+                            rows={5}
+                            value={description}
+                            onChange={(e) =>
+                                setDescription(
+                                    e.target.value
+                                )
+                            }
+                        />
+
+                    </div>
+
+
+                    {/* Price */}
+
                     <div className="grid-2">
 
                         <div className="form-group">
 
-                            <label>Price</label>
+                            <label>
+                                Price
+                            </label>
+
 
                             <input
                                 type="number"
                                 value={price}
                                 onChange={(e) =>
-                                    setPrice(e.target.value)
+                                    setPrice(
+                                        e.target.value
+                                    )
                                 }
                             />
 
                         </div>
 
+
                         <div className="form-group">
 
-                            <label>Sale Price</label>
+                            <label>
+                                Sale Price
+                            </label>
+
 
                             <input
                                 type="number"
                                 value={priceAfter}
                                 onChange={(e) =>
-                                    setPriceAfter(e.target.value)
+                                    setPriceAfter(
+                                        e.target.value
+                                    )
                                 }
                             />
 
                         </div>
 
                     </div>
+
+
+                    {/* Stock / Category */}
 
                     <div className="grid-2">
 
                         <div className="form-group">
 
-                            <label>Stock</label>
+                            <label>
+                                Stock
+                            </label>
+
 
                             <input
                                 type="number"
                                 value={stock}
                                 onChange={(e) =>
-                                    setStock(e.target.value)
+                                    setStock(
+                                        e.target.value
+                                    )
                                 }
                             />
 
                         </div>
 
+
                         <div className="form-group">
 
-                            <label>Category</label>
+                            <label>
+                                Category
+                            </label>
+
 
                             <input
                                 type="number"
                                 value={category}
                                 onChange={(e) =>
-                                    setCategory(e.target.value)
+                                    setCategory(
+                                        e.target.value
+                                    )
                                 }
                             />
 
                         </div>
 
                     </div>
+
+
+                    {/* Actions */}
 
                     <div className="modal-actions">
 
@@ -282,20 +456,28 @@ const updateMutation = useMutation({
                             type="button"
                             className="cancel-btn"
                             onClick={onClose}
+                            disabled={
+                                updateMutation.isPending
+                            }
                         >
                             Cancel
                         </button>
 
+
                         <button
                             type="submit"
                             className="save-btn"
-                            disabled={updateMutation.isPending}
+                            disabled={
+                                updateMutation.isPending
+                            }
                         >
+
                             {
                                 updateMutation.isPending
                                     ? "Saving..."
                                     : "Save Changes"
                             }
+
                         </button>
 
                     </div>
@@ -308,3 +490,4 @@ const updateMutation = useMutation({
 
     );
 }
+

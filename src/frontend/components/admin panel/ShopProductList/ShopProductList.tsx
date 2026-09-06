@@ -1,16 +1,24 @@
+
 "use client";
 
 import { useState } from "react";
 
 import Pagination from "@/components/commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import useShopProducts from "@/hooks/admin-panel/useShopProducts";
 
 import ProductRow from "../ProductRow/ProductRow";
 
 import "./ShopProductList.css";
 
+
 export default function ShopProductList() {
+
     const [page, setPage] = useState(1);
+
     const pageSize = 8;
 
     const {
@@ -18,7 +26,11 @@ export default function ShopProductList() {
         isLoading,
         isError,
         isFetching,
-    } = useShopProducts(page, pageSize);
+    } = useShopProducts(
+        page,
+        pageSize
+    );
+
 
     // ==========================================
     // Loading
@@ -27,12 +39,11 @@ export default function ShopProductList() {
     if (isLoading) {
         return (
             <div className="product-list">
-                <div className="products-loading">
-                    Loading products...
-                </div>
+                <Skeleton count={8} />
             </div>
         );
     }
+
 
     // ==========================================
     // Error
@@ -41,14 +52,31 @@ export default function ShopProductList() {
     if (isError) {
         return (
             <div className="product-list">
-                <div className="products-error">
-                    Failed to load products.
-                </div>
+                <ErrorState
+                    message="Failed to load products."
+                />
             </div>
         );
     }
 
+
     const products = data?.results ?? [];
+
+
+    // ==========================================
+    // Empty
+    // ==========================================
+
+    if (products.length === 0) {
+        return (
+            <div className="product-list">
+                <EmptyState
+                    message="No products found."
+                />
+            </div>
+        );
+    }
+
 
     // ==========================================
     // UI
@@ -64,6 +92,7 @@ export default function ShopProductList() {
             <div className="product-header">
 
                 <div>
+
                     <h1>
                         Products
                     </h1>
@@ -71,7 +100,9 @@ export default function ShopProductList() {
                     <p>
                         Manage all products in your store
                     </p>
+
                 </div>
+
 
                 <button
                     className="add-product-btn"
@@ -94,99 +125,82 @@ export default function ShopProductList() {
                 />
 
                 <select>
+
                     <option>
                         All Categories
                     </option>
+
                 </select>
 
+
                 <select>
+
                     <option>
                         All Stock
                     </option>
+
                 </select>
 
             </div>
 
 
             {/* ==========================================
-                EMPTY
+                TABLE
             ========================================== */}
 
-            {products.length === 0 ? (
+            <table className="product-table">
 
-                <div className="products-empty">
+                <thead>
 
-                    <h2>
-                        No Products Found
-                    </h2>
+                    <tr>
 
-                    <p>
-                        There are no products in your store.
-                    </p>
+                        <th>
+                            Image
+                        </th>
 
-                </div>
+                        <th>
+                            Name
+                        </th>
 
-            ) : (
+                        <th>
+                            Price
+                        </th>
 
-                /* ==========================================
-                    TABLE
-                ========================================== */
+                        <th>
+                            Sale Price
+                        </th>
 
-                <table className="product-table">
+                        <th>
+                            Stock
+                        </th>
 
-                    <thead>
+                        <th>
+                            Status
+                        </th>
 
-                        <tr>
+                        <th>
+                            Action
+                        </th>
 
-                            <th>
-                                Image
-                            </th>
+                    </tr>
 
-                            <th>
-                                Name
-                            </th>
-
-                            <th>
-                                Price
-                            </th>
-
-                            <th>
-                                Sale Price
-                            </th>
-
-                            <th>
-                                Stock
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
+                </thead>
 
 
-                    <tbody>
+                <tbody>
 
-                        {products.map((product) => (
+                    {products.map((product) => (
 
-                            <ProductRow
-                                key={product.id}
-                                product={product}
-                            />
+                        <ProductRow
+                            key={product.id}
+                            product={product}
+                        />
 
-                        ))}
+                    ))}
 
-                    </tbody>
+                </tbody>
 
-                </table>
-
-            )}
+            </table>
 
 
             {/* ==========================================
@@ -199,10 +213,14 @@ export default function ShopProductList() {
                     previous={data.links.previous}
                     loading={isFetching}
                     onNext={() =>
-                        setPage((prev) => prev + 1)
+                        setPage(
+                            (prev) => prev + 1
+                        )
                     }
                     onPrevious={() =>
-                        setPage((prev) => prev - 1)
+                        setPage(
+                            (prev) => prev - 1
+                        )
                     }
                 />
             )}
@@ -210,3 +228,4 @@ export default function ShopProductList() {
         </div>
     );
 }
+
