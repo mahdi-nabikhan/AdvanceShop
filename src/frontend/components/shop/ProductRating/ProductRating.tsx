@@ -4,10 +4,10 @@ import { useState } from "react";
 
 import useCanRateProduct from "@/hooks/shop/useCanRateProduct";
 import useAddProductRating from "@/hooks/shop/useAddProductRating";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
 
 import "./ProductRating.css";
-
-
 interface ProductRatingProps {
 
     productId: number;
@@ -130,37 +130,17 @@ export default function ProductRating({
     // Loading
     // ==========================================
 
+
+
+
     if (loading) {
-
-        return (
-
-            <div className="rating-loading">
-
-                Loading...
-
-            </div>
-
-        );
-
+        return <Skeleton count={1} />;
     }
 
-
-    // ==========================================
-    // Error
-    // ==========================================
-
     if (isError) {
-
         return (
-
-            <div className="rating-loading">
-
-                Failed to load rating status.
-
-            </div>
-
+            <ErrorState message="Failed to load rating status." />
         );
-
     }
 
 
@@ -217,10 +197,10 @@ export default function ProductRating({
                                     className={
 
                                         star <=
-                                        (
-                                            hoverRate ||
-                                            selectedRate
-                                        )
+                                            (
+                                                hoverRate ||
+                                                selectedRate
+                                            )
 
                                             ? "active"
 

@@ -1,6 +1,9 @@
 "use client";
 
 import useAddresses from "@/hooks/customer/useAddresses";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import {
     MapPin,
@@ -21,32 +24,32 @@ export default function CustomerAddressList() {
 
 
 
-    if (isError) {
+    if (isLoading) {
         return (
             <div className="address-loading">
-                Failed to load addresses.
+                <Skeleton count={4} />
             </div>
         );
     }
 
-
-
-
-
-    if (isLoading) {
-
-
+    if (isError) {
         return (
-
             <div className="address-loading">
-
-                Loading Addresses...
-
+                <ErrorState
+                    message="Failed to load addresses."
+                />
             </div>
+        );
+    }
 
-        )
-
-
+    if (addresses.length === 0) {
+        return (
+            <div className="address-loading">
+                <EmptyState
+                    message="No addresses found."
+                />
+            </div>
+        );
     }
 
 

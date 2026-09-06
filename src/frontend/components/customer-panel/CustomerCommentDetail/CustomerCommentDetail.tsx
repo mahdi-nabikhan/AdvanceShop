@@ -16,7 +16,9 @@ import DeleteCommentModal from "../DeleteCommentModal/DeleteCommentModal";
 
 import "./CustomerCommentDetail.css";
 
-
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 
 
@@ -51,22 +53,33 @@ export default function CustomerCommentDetail({
     } = useCustomerComment(commentId)
 
 
-    if (isLoading) {
-        return <div>
-            Loading...
-        </div>;
+   if (isLoading) {
+        return (
+            <div>
+                <Skeleton count={3} />
+            </div>
+        );
     }
 
     if (isError) {
-        return <div>
-            Failed to load comment.
-        </div>;
+        return (
+            <div>
+                <ErrorState
+                    message="Failed to load comment."
+                />
+            </div>
+        );
     }
 
-        if (!comment) {
-        return <div>Comment not found.</div>;
+    if (!comment) {
+        return (
+            <div>
+                <EmptyState
+                    message="Comment not found."
+                />
+            </div>
+        );
     }
-
 
     return (
 

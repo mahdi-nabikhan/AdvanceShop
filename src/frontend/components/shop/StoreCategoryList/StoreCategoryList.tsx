@@ -2,7 +2,9 @@
 
 import useStoreCategories from "@/hooks/shop/StoreCategoryList";
 import "./StoreCategoryList.css";
-
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 interface Props {
     onSelectCategory: (id: number) => void;
@@ -25,13 +27,11 @@ export default function StoreCategoryList({
     if (isLoading) {
 
         return (
+            <div className="store-category-list">
 
-            <div>
-
-                Loading Categories...
+                <Skeleton count={6} />
 
             </div>
-
         );
 
     }
@@ -44,13 +44,32 @@ export default function StoreCategoryList({
     if (isError) {
 
         return (
+            <div className="store-category-list">
 
-            <div>
-
-                Error loading categories.
+                <ErrorState
+                    message="Error loading categories."
+                />
 
             </div>
+        );
 
+    }
+
+
+    // ==========================================
+    // Empty
+    // ==========================================
+
+    if (categories.length === 0) {
+
+        return (
+            <div className="store-category-list">
+
+                <EmptyState
+                    message="No categories found."
+                />
+
+            </div>
         );
 
     }

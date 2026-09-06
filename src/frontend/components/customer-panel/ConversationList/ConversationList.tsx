@@ -1,6 +1,9 @@
 "use client";
 import useConversations from "@/hooks/chat/useConversations";
 import "./ConversationList.css";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 interface Props {
     selectedConversation: number | null;
@@ -19,41 +22,23 @@ export default function ConversationList({
     } = useConversations();
 
     if (isLoading) {
-
         return (
-
             <aside className="customer-conversation-list">
-
-                <div className="customer-conversation-loading">
-
-                    Loading conversations...
-
-                </div>
-
+                <Skeleton count={5} />
             </aside>
-
         );
-
     }
-
 
     if (isError) {
-
         return (
-
             <aside className="customer-conversation-list">
-
-                <div className="customer-conversation-error">
-
-                    Failed to load conversations.
-
-                </div>
-
+                <ErrorState
+                    message="Failed to load conversations."
+                />
             </aside>
-
         );
-
     }
+
 
 
     return (

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -11,6 +12,10 @@ import {
 
 import useCustomerTickets from "@/hooks/customer/useCustomerTickets";
 import Pagination from "@/components/commen/Paginations";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import "./CustomerTicketList.css";
 
@@ -29,7 +34,7 @@ export default function CustomerTicketList() {
     if (isLoading) {
         return (
             <div className="ticket-loading">
-                Loading Tickets...
+                <Skeleton count={8} />
             </div>
         );
     }
@@ -37,15 +42,19 @@ export default function CustomerTicketList() {
     if (isError) {
         return (
             <div className="ticket-loading">
-                Failed to load tickets.
+                <ErrorState
+                    message="Failed to load tickets."
+                />
             </div>
         );
     }
 
-    if (!data) {
+    if (!data || data.results.length === 0) {
         return (
             <div className="ticket-loading">
-                No tickets found.
+                <EmptyState
+                    message="No tickets found."
+                />
             </div>
         );
     }
@@ -69,64 +78,54 @@ export default function CustomerTicketList() {
 
             <div className="ticket-grid">
 
-                {tickets.length > 0 ? (
+                {tickets.map((ticket) => (
 
-                    tickets.map((ticket) => (
+                    <div
+                        className="ticket-card"
+                        key={ticket.pk}
+                    >
 
-                        <div
-                            className="ticket-card"
-                            key={ticket.pk}
-                        >
+                        <div className="ticket-icon">
+                            <Ticket size={30} />
+                        </div>
 
-                            <div className="ticket-icon">
-                                <Ticket size={30} />
-                            </div>
+                        <div className="ticket-content">
 
-                            <div className="ticket-content">
+                            <h3>
+                                {ticket.title}
+                            </h3>
 
-                                <h3>
-                                    {ticket.title}
-                                </h3>
+                            <p>
+                                {ticket.content.length > 120
+                                    ? `${ticket.content.slice(0, 120)}...`
+                                    : ticket.content}
+                            </p>
 
-                                <p>
-                                    {ticket.content.length > 120
-                                        ? `${ticket.content.slice(0, 120)}...`
-                                        : ticket.content}
-                                </p>
+                            <div className="ticket-footer">
 
-                                <div className="ticket-footer">
+                                <div className="ticket-store">
 
-                                    <div className="ticket-store">
+                                    <Store size={16} />
 
-                                        <Store size={16} />
-
-                                        Store #{ticket.store}
-
-                                    </div>
-
-                                    <Link
-                                        href={`/customer-panel/tickets/${ticket.pk}`}
-                                        className="ticket-detail-btn"
-                                    >
-                                        View
-                                        <ChevronRight size={16} />
-                                    </Link>
+                                    Store #{ticket.store}
 
                                 </div>
+
+                                <Link
+                                    href={`/customer-panel/tickets/${ticket.pk}`}
+                                    className="ticket-detail-btn"
+                                >
+                                    View
+                                    <ChevronRight size={16} />
+                                </Link>
 
                             </div>
 
                         </div>
 
-                    ))
-
-                ) : (
-
-                    <div className="ticket-loading">
-                        No tickets found.
                     </div>
 
-                )}
+                ))}
 
             </div>
 
@@ -141,3 +140,4 @@ export default function CustomerTicketList() {
         </section>
     );
 }
+

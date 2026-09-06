@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { useCustomerOrderItems } from "@/hooks/customer/useCustomerOrder";
-
 import Pagination from "@/components/commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import BACKEND_URLS from "@/utils";
 
@@ -38,7 +40,7 @@ export default function CustomerOrderItemList({
     if (isLoading) {
         return (
             <div className="order-loading">
-                Loading...
+                <Skeleton count={8} />
             </div>
         );
     }
@@ -46,19 +48,22 @@ export default function CustomerOrderItemList({
     if (isError) {
         return (
             <div className="order-error">
-                Failed to load order items.
+                <ErrorState
+                    message="Failed to load order items."
+                />
             </div>
         );
     }
 
-    if (!data) {
+    if (!data || data.results.length === 0) {
         return (
             <div className="order-error">
-                No order items found.
+                <EmptyState
+                    message="No order items found."
+                />
             </div>
         );
     }
-
     const items = data.results;
 
     return (

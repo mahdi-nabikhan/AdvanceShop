@@ -12,6 +12,9 @@ import {
 } from "lucide-react";
 
 import "./CustomerCommentList.css";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 export default function CustomerCommentList() {
     const [page, setPage] = useState(1);
@@ -25,10 +28,10 @@ export default function CustomerCommentList() {
         isError,
     } = useCustomerComments(page, pageSize);
 
-    if (isLoading) {
+   if (isLoading) {
         return (
             <div className="comments-loading">
-                Loading Comments...
+                <Skeleton count={8} />
             </div>
         );
     }
@@ -36,18 +39,23 @@ export default function CustomerCommentList() {
     if (isError) {
         return (
             <div className="comments-loading">
-                Failed to load comments.
+                <ErrorState
+                    message="Failed to load comments."
+                />
             </div>
         );
     }
 
-    if (!data) {
+    if (!data || data.results.length === 0) {
         return (
             <div className="comments-loading">
-                No comments found.
+                <EmptyState
+                    message="No comments found."
+                />
             </div>
         );
     }
+
 
     const comments = data.results;
 

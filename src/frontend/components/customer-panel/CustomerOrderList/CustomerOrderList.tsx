@@ -5,6 +5,9 @@ import Link from "next/link";
 
 import useCustomerOrders from "@/hooks/customer/useCustomerOrders";
 import Pagination from "@/components/commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+ import ErrorState from "@/components/commen/ErrorState"; 
+import EmptyState from "@/components/commen/EmptyState";
 
 import {
     Package,
@@ -27,29 +30,14 @@ export default function CustomerOrderList() {
         isError,
     } = useCustomerOrders(page, pageSize);
 
-    if (isLoading) {
-        return (
-            <div className="order-loading">
-                Loading Orders...
-            </div>
-        );
+    if (isLoading) { 
+        return ( <div className="order-loading"> <Skeleton count={8} /> </div> ); 
     }
-
-    if (isError) {
-        return (
-            <div className="order-loading">
-                Failed to load orders.
-            </div>
-        );
+    if (isError) { 
+        return ( <div className="order-loading"> <ErrorState message="Failed to load orders." /> </div> ); 
     }
-
-    if (!data) {
-        return (
-            <div className="order-loading">
-                No orders found.
-            </div>
-        );
-    }
+    if (!data || data.results.length === 0) { 
+        return ( <div className="order-loading"> <EmptyState message="You don't have any orders yet." /> </div> ); }
 
     const orders = data.results;
 

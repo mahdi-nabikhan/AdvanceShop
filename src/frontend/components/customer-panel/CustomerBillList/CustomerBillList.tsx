@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import useBills from "@/hooks/customer/useBills";
 import Pagination from "@/components/commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import {
     ReceiptText,
@@ -28,26 +31,30 @@ export default function CustomerBillList() {
         isError,
     } = useBills(page, pageSize);
 
+   if (isLoading) {
+        return (
+            <div className="bill-loading">
+                <Skeleton count={8} />
+            </div>
+        );
+    }
+
     if (isError) {
         return (
             <div className="bill-loading">
-                Failed to load bills.
+                <ErrorState
+                    message="Failed to load bills."
+                />
             </div>
         );
     }
 
-    if (isLoading) {
+    if (!data || data.results.length === 0) {
         return (
             <div className="bill-loading">
-                Loading Bills...
-            </div>
-        );
-    }
-
-    if (!data) {
-        return (
-            <div className="bill-loading">
-                No bills found.
+                <EmptyState
+                    message="No bills found."
+                />
             </div>
         );
     }

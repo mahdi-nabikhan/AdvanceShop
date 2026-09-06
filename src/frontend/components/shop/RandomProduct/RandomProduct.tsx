@@ -6,6 +6,8 @@ import Link from "next/link";
 import BACKEND_URLS from "@/utils";
 
 import useRandomProducts from "@/hooks/shop/useRandomProducts";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
 
 import Pagination from "@/components/commen/Paginations";
 
@@ -28,7 +30,6 @@ export default function RandomProducts() {
     // ==========================================
     // Loading
     // ==========================================
-
     if (isLoading) {
 
         return (
@@ -39,9 +40,7 @@ export default function RandomProducts() {
                     Recommended Products
                 </h2>
 
-                <p>
-                    Loading...
-                </p>
+                <Skeleton count={8} />
 
             </section>
 
@@ -49,11 +48,9 @@ export default function RandomProducts() {
 
     }
 
-
     // ==========================================
     // Error
     // ==========================================
-
     if (isError) {
 
         return (
@@ -64,15 +61,18 @@ export default function RandomProducts() {
                     Recommended Products
                 </h2>
 
-                <p>
-                    Failed to load products.
-                </p>
+                <ErrorState
+                    message="Failed to load products."
+                />
 
             </section>
 
         );
 
     }
+    
+
+    
 
 
     const products = data?.results ?? [];

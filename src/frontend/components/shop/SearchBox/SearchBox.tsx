@@ -154,15 +154,7 @@ export default function SearchBox() {
 
             };
 
-        },
-
-        enabled:
-            Boolean(searchQuery),
-
-        staleTime:
-            30 * 1000,
-
-    });
+        },});
 
 
     const stores:

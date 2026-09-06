@@ -343,12 +343,23 @@ class ProductListApiView(GenericAPIView):
     def get_queryset(self, pk):
         return Product.objects.filter(store__pk=pk)
 
-    def get(self, requst, pk):
-        data = self.get_queryset(pk)
-        serializer = self.serializer_class(
-            instance=data, many=True, context={'request': requst})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
+    def get(self, request, pk):
+        queryset = self.get_queryset(pk=pk)
+        page = self.paginate_queryset(queryset=queryset)
+        if page is not None:
+            serializer= self.serializer_class(page,
+                                              many=True,
+                                              context={'request':request})
+            return self.get_paginated_response(
+                serializer.data
+            )
+        serializer =  self.serializer_class(queryset,
+                                            many=True,
+                                            context={'request':request})
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
 class ProductDetailAPIView(GenericAPIView):
     """

@@ -1,6 +1,8 @@
 
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
 
 import {
     getCommentReplies,
@@ -15,7 +17,7 @@ export default function ReplyList({
 }: Props) {
     const {
         data: replies = [],
-        isLoading: loading,
+        isLoading, isError,
     } = useQuery<CommentReply[]>({
         queryKey: [
             "comment-replies",
@@ -25,30 +27,29 @@ export default function ReplyList({
             getCommentReplies(commentID),
     });
 
+    if (isLoading) {
+        return <Skeleton count={2} />;
+    }
 
 
-
-
-
-
-
-
-    if (loading) {
-
+    if (isError) {
         return (
-            <div className="reply-loading">
-                Loading replies...
-            </div>
+            <ErrorState message="Error loading replies." />
         );
-
     }
 
 
     if (replies.length === 0) {
-
         return null;
-
     }
+
+
+
+
+
+
+
+
 
 
     return (
