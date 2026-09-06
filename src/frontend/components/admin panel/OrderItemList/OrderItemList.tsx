@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -7,6 +8,10 @@ import BACKEND_URLS from "@/utils";
 import useOrderItems from "@/hooks/admin-panel/useOrderItems";
 import Pagination from "@/components/commen/Paginations";
 
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import "./OrderItemList.css";
 
 
@@ -15,7 +20,9 @@ interface Props {
 }
 
 
-export default function OrderItemList({ orderId }: Props) {
+export default function OrderItemList({
+    orderId,
+}: Props) {
 
     const [page, setPage] = useState(1);
 
@@ -33,13 +40,23 @@ export default function OrderItemList({ orderId }: Props) {
     );
 
 
-    if (isError) {
-        return <h2>Failed to load order items.</h2>;
+    if (isLoading) {
+        return (
+            <div className="order-item-page">
+                <Skeleton count={8} />
+            </div>
+        );
     }
 
 
-    if (isLoading) {
-        return <h2>Loading...</h2>;
+    if (isError) {
+        return (
+            <div className="order-item-page">
+                <ErrorState
+                    message="Failed to load order items."
+                />
+            </div>
+        );
     }
 
 
@@ -47,7 +64,13 @@ export default function OrderItemList({ orderId }: Props) {
 
 
     if (items.length === 0) {
-        return <h2>No Order Item Found</h2>;
+        return (
+            <div className="order-item-page">
+                <EmptyState
+                    message="No order items found."
+                />
+            </div>
+        );
     }
 
 
@@ -70,145 +93,141 @@ export default function OrderItemList({ orderId }: Props) {
 
             <div className="item-list">
 
-                {
-                    items.map((item) => (
+                {items.map((item) => (
 
-                        <div
-                            className="item-card"
-                            key={item.id}
-                        >
+                    <div
+                        className="item-card"
+                        key={item.id}
+                    >
 
-                            <img
-                                src={
-                                    item.product.product_image
-                                        ? `${BACKEND_URLS}${item.product.product_image}`
-                                        : "/no-image.png"
-                                }
-                                alt={item.product.name}
-                            />
-
-
-                            <div className="item-content">
-
-                                <h2>
-                                    {item.product.name}
-                                </h2>
-
-                                <p>
-                                    {item.product.description}
-                                </p>
+                        <img
+                            src={
+                                item.product.product_image
+                                    ? `${BACKEND_URLS}${item.product.product_image}`
+                                    : "/no-image.png"
+                            }
+                            alt={item.product.name}
+                        />
 
 
-                                <div className="item-grid">
+                        <div className="item-content">
 
-                                    <div>
+                            <h2>
+                                {item.product.name}
+                            </h2>
 
-                                        <span>
-                                            Quantity
-                                        </span>
-
-                                        <strong>
-                                            {item.quantity}
-                                        </strong>
-
-                                    </div>
+                            <p>
+                                {item.product.description}
+                            </p>
 
 
-                                    <div>
+                            <div className="item-grid">
 
-                                        <span>
-                                            Price
-                                        </span>
+                                <div>
 
-                                        <strong>
-                                            ${item.product.price}
-                                        </strong>
+                                    <span>
+                                        Quantity
+                                    </span>
 
-                                    </div>
-
-
-                                    <div>
-
-                                        <span>
-                                            Sale Price
-                                        </span>
-
-                                        <strong>
-                                            ${item.product.price_after}
-                                        </strong>
-
-                                    </div>
-
-
-                                    <div>
-
-                                        <span>
-                                            Total
-                                        </span>
-
-                                        <strong>
-                                            ${item.total}
-                                        </strong>
-
-                                    </div>
+                                    <strong>
+                                        {item.quantity}
+                                    </strong>
 
                                 </div>
 
 
-                                <div className="bottom-row">
+                                <div>
 
-                                    <span
-                                        className={
-                                            item.status === "P"
-                                                ? "pending"
-                                                : "confirmed"
-                                        }
-                                    >
-                                        {
-                                            item.status === "P"
-                                                ? "Pending"
-                                                : "Confirmed"
-                                        }
+                                    <span>
+                                        Price
                                     </span>
 
+                                    <strong>
+                                        ${item.product.price}
+                                    </strong>
 
-                                    <button>
-                                        View Product
-                                    </button>
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Sale Price
+                                    </span>
+
+                                    <strong>
+                                        ${item.product.price_after}
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Total
+                                    </span>
+
+                                    <strong>
+                                        ${item.total}
+                                    </strong>
 
                                 </div>
 
                             </div>
 
+
+                            <div className="bottom-row">
+
+                                <span
+                                    className={
+                                        item.status === "P"
+                                            ? "pending"
+                                            : "confirmed"
+                                    }
+                                >
+                                    {
+                                        item.status === "P"
+                                            ? "Pending"
+                                            : "Confirmed"
+                                    }
+                                </span>
+
+
+                                <button>
+                                    View Product
+                                </button>
+
+                            </div>
+
                         </div>
 
-                    ))
-                }
+                    </div>
+
+                ))}
 
             </div>
 
 
-            {
-                data && (
-                    <Pagination
-                        next={data.links.next}
-                        previous={data.links.previous}
-                        loading={isFetching}
-                        onNext={() =>
-                            setPage(
-                                (prev) => prev + 1
-                            )
-                        }
-                        onPrevious={() =>
-                            setPage(
-                                (prev) => prev - 1
-                            )
-                        }
-                    />
-                )
-            }
+            {data && (
+                <Pagination
+                    next={data.links.next}
+                    previous={data.links.previous}
+                    loading={isFetching}
+                    onNext={() =>
+                        setPage(
+                            (prev) => prev + 1
+                        )
+                    }
+                    onPrevious={() =>
+                        setPage(
+                            (prev) => prev - 1
+                        )
+                    }
+                />
+            )}
 
         </div>
-
     );
 }
+

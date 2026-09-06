@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
-import { shopAdminQueryKeys } from "@/Lib/query-keys/shopadmin.keys";
+
 import {
     useMutation,
     useQuery,
@@ -9,12 +10,19 @@ import {
 } from "@tanstack/react-query";
 
 import {
+    shopAdminQueryKeys,
+} from "@/Lib/query-keys/shopadmin.keys";
+
+import {
     getStoreProfile,
     updateStoreProfile,
 } from "@/services/shop-admin-panel.services";
 
-import "./StoreProfile.css";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
+import "./StoreProfile.css";
 
 interface StoreData {
     pk: number;
@@ -23,17 +31,13 @@ interface StoreData {
     name?: string;
 }
 
-
 interface StoreFormData {
     name: string;
     description: string;
 }
 
-
 export default function StoreProfile() {
-
     const queryClient = useQueryClient();
-
 
     const [formData, setFormData] =
         useState<StoreFormData>({
@@ -41,18 +45,14 @@ export default function StoreProfile() {
             description: "",
         });
 
-
     const [editing, setEditing] =
         useState(false);
-
 
     const [error, setError] =
         useState("");
 
-
     const [success, setSuccess] =
         useState("");
-
 
     /* =========================
        GET STORE
@@ -63,58 +63,44 @@ export default function StoreProfile() {
         isPending: loading,
         isError,
     } = useQuery<StoreData>({
-        queryKey: shopAdminQueryKeys.storeProfile(),
+        queryKey:
+            shopAdminQueryKeys.storeProfile(),
         queryFn: getStoreProfile,
     });
-
 
     /* =========================
        SET FORM DATA
     ========================= */
 
     useEffect(() => {
-
         if (!store) {
             return;
         }
 
         setFormData({
-
-            name:
-                store.name ?? "",
-
+            name: store.name ?? "",
             description:
                 store.description ?? "",
-
         });
-
     }, [store]);
-
 
     /* =========================
        UPDATE STORE
     ========================= */
 
     const updateMutation = useMutation({
-
         mutationFn: (
             data: StoreFormData
         ) =>
             updateStoreProfile(data),
 
         onSuccess: (updatedStore) => {
-
             queryClient.invalidateQueries({
-
-                queryKey: [
-                    "store-profile",
-                ],
-
+                queryKey:
+                    shopAdminQueryKeys.storeProfile(),
             });
 
-
             setFormData({
-
                 name:
                     updatedStore.name ??
                     formData.name,
@@ -122,48 +108,36 @@ export default function StoreProfile() {
                 description:
                     updatedStore.description ??
                     formData.description,
-
             });
 
-
             setEditing(false);
-
 
             setSuccess(
                 "Store information updated successfully."
             );
 
-
             setError("");
-
         },
 
         onError: (error: any) => {
-
             console.error(
                 "UPDATE STORE ERROR:",
                 error
             );
 
-
             if (
                 error.response?.data
             ) {
-
                 const data =
                     error.response.data;
-
 
                 if (
                     typeof data === "string"
                 ) {
-
                     setError(data);
-
                 } else if (
                     typeof data === "object"
                 ) {
-
                     const messages =
                         Object.entries(data)
                             .map(
@@ -176,32 +150,22 @@ export default function StoreProfile() {
                             )
                             .join(" | ");
 
-
                     setError(
                         messages ||
                         "Failed to update store."
                     );
-
                 } else {
-
                     setError(
                         "Failed to update store."
                     );
-
                 }
-
             } else {
-
                 setError(
                     "Failed to update store."
                 );
-
             }
-
         },
-
     });
-
 
     /* =========================
        HANDLE INPUT
@@ -213,25 +177,18 @@ export default function StoreProfile() {
             HTMLTextAreaElement
         >
     ) {
-
         const {
             name,
             value,
         } = e.target;
 
-
         setFormData(
             (prev) => ({
-
                 ...prev,
-
                 [name]: value,
-
             })
         );
-
     }
-
 
     /* =========================
        HANDLE SUBMIT
@@ -240,95 +197,78 @@ export default function StoreProfile() {
     function handleSubmit(
         e: React.FormEvent
     ) {
-
         e.preventDefault();
 
-
         setError("");
-
         setSuccess("");
-
 
         updateMutation.mutate(
             formData
         );
-
     }
-
 
     /* =========================
        CANCEL EDIT
     ========================= */
 
     function handleCancel() {
-
         if (!store) {
             return;
         }
 
-
         setFormData({
-
             name:
                 store.name ?? "",
 
             description:
                 store.description ?? "",
-
         });
-
 
         setEditing(false);
 
         setError("");
-
         setSuccess("");
-
     }
-
 
     /* =========================
        LOADING
     ========================= */
 
     if (loading) {
-
         return (
-
-            <div className="store-profile-loading">
-
-                <div className="store-profile-spinner" />
-
-                <p>
-                    Loading store...
-                </p>
-
+            <div className="store-profile">
+                <Skeleton count={4} />
             </div>
-
         );
-
     }
-
 
     /* =========================
        ERROR
     ========================= */
 
-    if (isError || !store) {
-
+    if (isError) {
         return (
-
-            <div className="store-profile-error">
-
-                {error ||
-                    "Store information not found."}
-
+            <div className="store-profile">
+                <ErrorState
+                    message="Failed to load store information."
+                />
             </div>
-
         );
-
     }
 
+    /* =========================
+       EMPTY
+    ========================= */
+
+    if (!store) {
+        return (
+            <div className="store-profile">
+                <EmptyState
+                    message="Store information not found."
+                />
+            </div>
+        );
+    }
 
     /* =========================
        STORE DATA
@@ -338,11 +278,9 @@ export default function StoreProfile() {
         store.name ??
         "Unnamed Store";
 
-
     const storeDescription =
         store.description ??
         "No description provided.";
-
 
     const storeInitial =
         storeName
@@ -350,15 +288,12 @@ export default function StoreProfile() {
             .toUpperCase() ||
         "S";
 
-
     /* =========================
        RENDER
     ========================= */
 
     return (
-
         <section className="store-profile">
-
 
             {/* HEADER */}
 
@@ -376,31 +311,21 @@ export default function StoreProfile() {
 
                 </div>
 
-
                 {!editing && (
-
                     <button
                         type="button"
                         className="store-edit-button"
                         onClick={() => {
-
                             setEditing(true);
-
                             setSuccess("");
-
                             setError("");
-
                         }}
                     >
-
                         Edit Store
-
                     </button>
-
                 )}
 
             </div>
-
 
             {/* STORE IMAGE */}
 
@@ -409,22 +334,17 @@ export default function StoreProfile() {
                 <div className="store-image">
 
                     {store.image ? (
-
                         <img
                             src={store.image}
                             alt={storeName}
                         />
-
                     ) : (
-
                         <span>
                             {storeInitial}
                         </span>
-
                     )}
 
                 </div>
-
 
                 <div>
 
@@ -440,14 +360,12 @@ export default function StoreProfile() {
 
             </div>
 
-
             {/* FORM */}
 
             <form
                 className="store-profile-form"
                 onSubmit={handleSubmit}
             >
-
 
                 {/* NAME */}
 
@@ -457,9 +375,7 @@ export default function StoreProfile() {
                         Store Name
                     </label>
 
-
                     {editing ? (
-
                         <input
                             id="store-name"
                             type="text"
@@ -468,19 +384,13 @@ export default function StoreProfile() {
                             onChange={handleChange}
                             required
                         />
-
                     ) : (
-
                         <div className="store-value">
-
                             {storeName}
-
                         </div>
-
                     )}
 
                 </div>
-
 
                 {/* DESCRIPTION */}
 
@@ -490,9 +400,7 @@ export default function StoreProfile() {
                         Description
                     </label>
 
-
                     {editing ? (
-
                         <textarea
                             id="store-description"
                             name="description"
@@ -502,84 +410,64 @@ export default function StoreProfile() {
                             onChange={handleChange}
                             rows={5}
                         />
-
                     ) : (
-
                         <div className="store-value store-description">
-
                             {storeDescription}
-
                         </div>
-
                     )}
 
                 </div>
 
-
                 {/* ERROR */}
 
                 {error && (
-
                     <div className="store-message store-error">
-
                         {error}
-
                     </div>
-
                 )}
-
 
                 {/* SUCCESS */}
 
                 {success && (
-
                     <div className="store-message store-success">
-
                         {success}
-
                     </div>
-
                 )}
-
 
                 {/* ACTIONS */}
 
                 {editing && (
-
                     <div className="store-form-actions">
 
                         <button
                             type="button"
                             className="store-cancel-button"
                             onClick={handleCancel}
-                            disabled={updateMutation.isPending}
+                            disabled={
+                                updateMutation.isPending
+                            }
                         >
-
                             Cancel
-
                         </button>
-
 
                         <button
                             type="submit"
                             className="store-save-button"
-                            disabled={updateMutation.isPending}
+                            disabled={
+                                updateMutation.isPending
+                            }
                         >
-
                             {updateMutation.isPending
                                 ? "Saving..."
                                 : "Save Changes"}
-
                         </button>
 
                     </div>
-
                 )}
 
             </form>
 
         </section>
-
     );
-
 }
+

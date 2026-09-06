@@ -14,6 +14,11 @@ import {
 
 import useConversationMessages from "@/hooks/customer/useConversationMessages";
 import useSendConversationMessage from "@/hooks/admin-panel/useSendConversationMessage";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import "./AdminChatBox.css";
 
 
@@ -27,7 +32,6 @@ export default function AdminChatBox({
     conversationId,
     currentUserEmail,
 }: Props) {
-
 
     // ==========================================
     // State
@@ -64,10 +68,6 @@ export default function AdminChatBox({
     const sendMessageMutation =
         useSendConversationMessage();
 
-
-    // ==========================================
-    // Send Message
-    // ==========================================
 
     const sendMessage = () => {
 
@@ -118,7 +118,7 @@ export default function AdminChatBox({
 
 
     // ==========================================
-    // Empty
+    // Empty Conversation Selection
     // ==========================================
 
     if (!conversationId) {
@@ -205,33 +205,25 @@ export default function AdminChatBox({
 
             <div className="admin-chat-body">
 
-
                 {loading && messages.length === 0 ? (
 
-                    <div className="admin-chat-loading">
-                        Loading messages...
-                    </div>
+                    <Skeleton count={5} />
 
                 ) : error && messages.length === 0 ? (
 
-                    <div className="admin-chat-error">
-                        {error}
-                    </div>
+                    <ErrorState
+                        message="Failed to load messages."
+                    />
 
                 ) : messages.length === 0 ? (
 
-                    <div className="admin-chat-no-messages">
-
-                        <p>
-                            No messages yet.
-                        </p>
-
-                    </div>
+                    <EmptyState
+                        message="No messages yet."
+                    />
 
                 ) : (
 
                     messages.map((message) => {
-
 
                         // ==================================
                         // Sender
@@ -251,15 +243,12 @@ export default function AdminChatBox({
                         return (
 
                             <div
-
                                 key={message.id}
-
                                 className={
                                     isAdmin
                                         ? "admin-message admin-message-sent"
                                         : "admin-message admin-message-received"
                                 }
-
                             >
 
                                 <div className="admin-message-bubble">
@@ -299,13 +288,9 @@ export default function AdminChatBox({
                                     {message.image && (
 
                                         <img
-
                                             src={message.image}
-
                                             alt="Message"
-
                                             className="admin-message-image"
-
                                         />
 
                                     )}
@@ -318,18 +303,12 @@ export default function AdminChatBox({
                                     {message.file && (
 
                                         <Link
-
                                             href={message.file}
-
                                             target="_blank"
-
                                             className="admin-message-file"
-
                                         >
 
-                                            <FileText
-                                                size={17}
-                                            />
+                                            <FileText size={17} />
 
                                             Open file
 
@@ -420,45 +399,31 @@ export default function AdminChatBox({
             <div className="admin-chat-input">
 
                 <input
-
                     type="text"
-
                     placeholder="Type your message..."
-
                     value={text}
-
                     onChange={(e) =>
                         setText(e.target.value)
                     }
-
                     onKeyDown={handleKeyDown}
-
                     disabled={
                         sendMessageMutation.isPending
                     }
-
                 />
 
 
                 <button
-
                     type="button"
-
                     onClick={sendMessage}
-
                     disabled={
                         sendMessageMutation.isPending ||
                         !text.trim()
                     }
-
                 >
 
                     {sendMessageMutation.isPending
-
                         ? "..."
-
                         : <Send size={18} />
-
                     }
 
                 </button>

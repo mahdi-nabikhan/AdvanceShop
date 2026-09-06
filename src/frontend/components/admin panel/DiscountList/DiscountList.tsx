@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -8,16 +9,23 @@ import Pagination from "@/components/commen/Paginations";
 
 import useProductDiscounts from "@/hooks/admin-panel/useProductDiscounts";
 
-function DiscountList({ productId }: { productId: number }) {
+
+function DiscountList({
+    productId,
+}: {
+    productId: number;
+}) {
 
     const [page, setPage] = useState(1);
 
     const pageSize = 8;
 
-    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] =
+        useState(false);
 
     const [selectedDiscount, setSelectedDiscount] =
         useState<number | null>(null);
+
 
     const {
         data,
@@ -32,16 +40,29 @@ function DiscountList({ productId }: { productId: number }) {
 
 
     if (isLoading) {
-        return <h3>Loading...</h3>;
+
+        return (
+            <h3>
+                Loading...
+            </h3>
+        );
+
     }
 
 
     if (isError) {
-        return <h3>Failed to load discounts.</h3>;
+
+        return (
+            <h3>
+                Failed to load discounts.
+            </h3>
+        );
+
     }
 
 
-    const discounts = data?.results ?? [];
+    const discounts =
+        data?.results ?? [];
 
 
     return (
@@ -50,9 +71,13 @@ function DiscountList({ productId }: { productId: number }) {
             <div className="discount-list">
 
                 {discounts.length === 0 && (
+
                     <div className="empty-discount">
+
                         No discounts found.
+
                     </div>
+
                 )}
 
 
@@ -72,7 +97,9 @@ function DiscountList({ productId }: { productId: number }) {
                                         : "discount-type percent"
                                 }
                             >
+
                                 {discount.discount_type}
+
                             </span>
 
 
@@ -94,14 +121,20 @@ function DiscountList({ productId }: { productId: number }) {
                         <div className="discount-footer">
 
                             <span>
+
                                 Product ID: {discount.products}
+
                             </span>
 
 
                             <div className="discount-actions">
 
-                                <button className="edit-discount">
+                                <button
+                                    className="edit-discount"
+                                >
+
                                     Edit
+
                                 </button>
 
 
@@ -113,11 +146,15 @@ function DiscountList({ productId }: { productId: number }) {
                                             discount.id
                                         );
 
-                                        setOpenDeleteModal(true);
+                                        setOpenDeleteModal(
+                                            true
+                                        );
 
                                     }}
                                 >
+
                                     Delete
+
                                 </button>
 
                             </div>
@@ -132,17 +169,29 @@ function DiscountList({ productId }: { productId: number }) {
 
 
             {data && (
+
                 <Pagination
+
                     next={data.links.next}
+
                     previous={data.links.previous}
+
                     loading={isFetching}
+
                     onNext={() =>
-                        setPage((prev) => prev + 1)
+                        setPage(
+                            (prev) => prev + 1
+                        )
                     }
+
                     onPrevious={() =>
-                        setPage((prev) => prev - 1)
+                        setPage(
+                            (prev) => prev - 1
+                        )
                     }
+
                 />
+
             )}
 
 
@@ -150,17 +199,31 @@ function DiscountList({ productId }: { productId: number }) {
                 selectedDiscount !== null && (
 
                     <DeleteDiscountModal
-                        open={openDeleteModal}
+
+                        open={
+                            openDeleteModal
+                        }
 
                         onClose={() => {
 
-                            setOpenDeleteModal(false);
+                            setOpenDeleteModal(
+                                false
+                            );
 
-                            setSelectedDiscount(null);
+                            setSelectedDiscount(
+                                null
+                            );
 
                         }}
 
-                        discountId={selectedDiscount}
+                        discountId={
+                            selectedDiscount
+                        }
+
+                        productId={
+                            productId
+                        }
+
                     />
 
                 )

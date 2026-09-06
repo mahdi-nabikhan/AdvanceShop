@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -25,6 +26,10 @@ import {
 } from "@/services/shop-admin-panel.services";
 
 import type { ProductImage } from "@/types/panel-admin";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import "./ShopProductDetail.css";
 
@@ -242,9 +247,9 @@ function ShopProductDetail({
 
         return (
 
-            <div>
+            <div className="detail-body">
 
-                Loading...
+                <Skeleton count={6} />
 
             </div>
 
@@ -264,9 +269,11 @@ function ShopProductDetail({
 
         return (
 
-            <div>
+            <div className="detail-body">
 
-                Failed to load product.
+                <ErrorState
+                    message="Failed to load product."
+                />
 
             </div>
 
@@ -283,9 +290,11 @@ function ShopProductDetail({
 
         return (
 
-            <div>
+            <div className="detail-body">
 
-                Product Not Found
+                <EmptyState
+                    message="Product not found."
+                />
 
             </div>
 
@@ -319,7 +328,6 @@ function ShopProductDetail({
     return (
 
         <>
-
 
             <div className="detail-body">
 
@@ -355,7 +363,6 @@ function ShopProductDetail({
                     >
 
                         {
-
                             images.length > 0
 
                                 ? (
@@ -417,7 +424,6 @@ function ShopProductDetail({
                                     </SwiperSlide>
 
                                 )
-
                         }
 
                     </Swiper>
@@ -445,7 +451,6 @@ function ShopProductDetail({
                     >
 
                         {
-
                             images.length > 0
 
                                 ? (
@@ -505,11 +510,9 @@ function ShopProductDetail({
                                     </SwiperSlide>
 
                                 )
-
                         }
 
                     </Swiper>
-
 
                 </div>
 
@@ -524,20 +527,16 @@ function ShopProductDetail({
                     <div className="card-header">
 
                         <h2>
-
                             {product.name}
-
                         </h2>
 
 
                         <span
-
                             className={
                                 product.quantity_in_stock > 0
                                     ? "status in-stock"
                                     : "status out-stock"
                             }
-
                         >
 
                             {
@@ -600,9 +599,7 @@ function ShopProductDetail({
                             </span>
 
                             <strong className="sale-price">
-
                                 ${product.price_after}
-
                             </strong>
 
                         </div>
@@ -633,7 +630,6 @@ function ShopProductDetail({
 
                         </div>
 
-
                     </div>
 
 
@@ -654,59 +650,40 @@ function ShopProductDetail({
 
 
                         <button
-
                             className="edit-btn"
-
                             onClick={() =>
                                 setOpenEditModal(true)
                             }
-
                         >
-
                             Edit Product
-
                         </button>
 
 
                         <button
-
                             className="primary-btn"
-
                             onClick={() =>
                                 setOpenDiscountModal(true)
                             }
-
                         >
-
                             Add Discount
-
                         </button>
 
 
                         <button className="delete-btn">
-
                             Delete Product
-
                         </button>
 
 
                         <button
-
                             className="primary-btn"
-
                             onClick={() =>
                                 setOpenImageModal(true)
                             }
-
                         >
-
                             Add Product Image
-
                         </button>
 
-
                     </div>
-
 
                 </div>
 
@@ -721,7 +698,6 @@ function ShopProductDetail({
                     }
                 />
 
-
             </div>
 
 
@@ -730,28 +706,18 @@ function ShopProductDetail({
             {/* ------------------------------------------------------ */}
 
             <AddDiscountModal
-
-                open={
-                    openDiscountModal
-                }
-
-                onClose={() =>
-                    setOpenDiscountModal(false)
-                }
-
-                productId={
-                    product.id
-                }
-
-            />
-
+    open={openDiscountModal}
+    onClose={() =>
+        setOpenDiscountModal(false)
+    }
+    productId={product.id}
+/>
 
             {/* ------------------------------------------------------ */}
             {/* Edit Product Modal */}
             {/* ------------------------------------------------------ */}
 
             <EditProductModal
-
                 open={
                     openEditModal
                 }
@@ -763,7 +729,6 @@ function ShopProductDetail({
                 product={
                     product
                 }
-
             />
 
 
@@ -772,7 +737,6 @@ function ShopProductDetail({
             {/* ------------------------------------------------------ */}
 
             <AddProductImageModal
-
                 open={
                     openImageModal
                 }
@@ -799,7 +763,6 @@ function ShopProductDetail({
 
                     }
                 }
-
             />
 
 
@@ -808,7 +771,6 @@ function ShopProductDetail({
             {/* ------------------------------------------------------ */}
 
             <DeleteImageModal
-
                 open={
                     openDeleteImageModal
                 }
@@ -828,14 +790,11 @@ function ShopProductDetail({
                 onConfirm={
                     deleteProductImageHandler
                 }
-
             />
-
 
         </>
 
     );
-
 }
 
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -7,46 +8,74 @@ import {
 
 import { shopAdminQueryKeys } from "@/Lib/query-keys/shopadmin.keys";
 import { deleteProductDiscount } from "@/services/product.services";
+
 import "./DeleteDiscountModal.css";
+
 
 interface Props {
     open: boolean;
     onClose: () => void;
     discountId: number;
+    productId: number;
 }
+
 
 export default function DeleteDiscountModal({
     open,
     onClose,
     discountId,
+    productId,
 }: Props) {
 
     const queryClient = useQueryClient();
 
+
     const deleteMutation = useMutation({
+
         mutationFn: deleteProductDiscount,
 
         onSuccess: () => {
+
             queryClient.invalidateQueries({
-                queryKey: shopAdminQueryKeys.productDiscounts(discountId),
+                queryKey: [
+                    "shop-admin",
+                    "product-discounts",
+                    productId,
+                ],
             });
 
             onClose();
+
         },
 
         onError: (err) => {
-            console.log(err);
+
+            console.error(
+                "Delete discount error:",
+                err
+            );
+
             alert("Failed to delete discount.");
+
         },
+
     });
 
+
     const deleteHandler = () => {
+
         deleteMutation.mutate(discountId);
+
     };
 
-    if (!open) return null;
+
+    if (!open) {
+        return null;
+    }
+
 
     return (
+
         <div className="delete-modal-overlay">
 
             <div className="delete-modal">
@@ -55,33 +84,50 @@ export default function DeleteDiscountModal({
                     🗑️
                 </div>
 
-                <h2>Delete Discount</h2>
+
+                <h2>
+                    Delete Discount
+                </h2>
+
 
                 <p>
-                    Are you sure you want to delete this discount?
+
+                    Are you sure you want to delete
+                    this discount?
+
                     <br />
+
                     This action cannot be undone.
+
                 </p>
+
 
                 <div className="delete-actions">
 
                     <button
                         className="cancel-btn"
                         onClick={onClose}
-                        disabled={deleteMutation.isPending}
+                        disabled={
+                            deleteMutation.isPending
+                        }
                     >
                         Cancel
                     </button>
 
+
                     <button
                         className="confirm-delete-btn"
                         onClick={deleteHandler}
-                        disabled={deleteMutation.isPending}
+                        disabled={
+                            deleteMutation.isPending
+                        }
                     >
+
                         {deleteMutation.isPending
                             ? "Deleting..."
                             : "Delete"
                         }
+
                     </button>
 
                 </div>
@@ -89,5 +135,7 @@ export default function DeleteDiscountModal({
             </div>
 
         </div>
+
     );
 }
+

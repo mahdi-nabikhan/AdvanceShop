@@ -1,8 +1,13 @@
+
 "use client";
 
 import { useState } from "react";
 
 import Pagination from "@/components/commen/Paginations";
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
+
 import useShopTickets from "@/hooks/admin-panel/useShopTickets";
 
 import "./ShopTicketList.css";
@@ -25,7 +30,7 @@ export default function ShopTicketList() {
     if (isLoading) {
         return (
             <div className="ticket-page">
-                <h2>Loading...</h2>
+                <Skeleton count={8} />
             </div>
         );
     }
@@ -37,7 +42,9 @@ export default function ShopTicketList() {
     if (isError) {
         return (
             <div className="ticket-page">
-                <h2>Failed to load tickets.</h2>
+                <ErrorState
+                    message="Failed to load tickets."
+                />
             </div>
         );
     }
@@ -51,7 +58,9 @@ export default function ShopTicketList() {
     if (tickets.length === 0) {
         return (
             <div className="ticket-page">
-                <h2>No Tickets Found</h2>
+                <EmptyState
+                    message="No tickets found."
+                />
             </div>
         );
     }
@@ -163,3 +172,4 @@ export default function ShopTicketList() {
         </div>
     );
 }
+

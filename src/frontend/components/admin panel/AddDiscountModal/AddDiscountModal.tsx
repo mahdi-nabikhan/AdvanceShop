@@ -9,12 +9,15 @@ interface Props {
     open: boolean;
     onClose: () => void;
     productId: number;
+
 }
 
 function AddDiscountModal({
     open,
     onClose,
-    productId
+    productId,
+        
+
 }: Props) {
     const queryClient = useQueryClient();
     const [value, setValue] = useState('')
@@ -32,7 +35,7 @@ function AddDiscountModal({
     onSuccess: () => {
 
         queryClient.invalidateQueries({
-            queryKey: shopAdminQueryKeys.productDiscounts(productId),
+            queryKey: shopAdminQueryKeys.productDiscounts(productId,1,1),
         });
 
         setValue("");

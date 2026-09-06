@@ -1,9 +1,14 @@
+
 "use client";
 
 import { useState } from "react";
 
 import useShopOrders from "@/hooks/admin-panel/useShopOrders";
 import Pagination from "@/components/commen/Paginations";
+
+import Skeleton from "@/components/commen/Skeleton";
+import ErrorState from "@/components/commen/ErrorState";
+import EmptyState from "@/components/commen/EmptyState";
 
 import "./OrderList.css";
 
@@ -25,25 +30,38 @@ export default function OrderList() {
     );
 
 
-    if (isError) {
+    if (isLoading) {
         return (
-            <div className="orders-error">
-                Failed to load orders.
+            <div className="orders-page">
+                <Skeleton count={8} />
             </div>
         );
     }
 
 
-    if (isLoading) {
+    if (isError) {
         return (
-            <div className="orders-loading">
-                Loading...
+            <div className="orders-page">
+                <ErrorState
+                    message="Failed to load orders."
+                />
             </div>
         );
     }
 
 
     const orders = data?.results ?? [];
+
+
+    if (orders.length === 0) {
+        return (
+            <div className="orders-page">
+                <EmptyState
+                    message="No orders found."
+                />
+            </div>
+        );
+    }
 
 
     return (
@@ -65,137 +83,112 @@ export default function OrderList() {
             </div>
 
 
-            {
-                orders.length === 0 ? (
+            <div className="orders-list">
 
-                    <div className="empty-orders">
+                {orders.map((order) => (
 
-                        <h2>No Orders Found</h2>
+                    <div
+                        key={order.pk}
+                        className="order-card"
+                    >
 
-                    </div>
+                        <div className="order-top">
 
-                ) : (
+                            <h2>
+                                Order #{order.pk}
+                            </h2>
 
-                    <div className="orders-list">
+                            <span
+                                className={
+                                    order.status
+                                        ? "status completed"
+                                        : "status pending"
+                                }
+                            >
+                                {
+                                    order.status
+                                        ? "Completed"
+                                        : "Pending"
+                                }
+                            </span>
 
-                        {
-                            orders.map((order) => (
+                        </div>
 
-                                <div
-                                    key={order.pk}
-                                    className="order-card"
+
+                        <div className="order-body">
+
+                            <div className="order-item">
+
+                                <span>
+                                    Customer
+                                </span>
+
+                                <strong>
+                                    {order.customer.username}
+                                </strong>
+
+                            </div>
+
+
+                            <div className="order-item">
+
+                                <span>
+                                    Customer ID
+                                </span>
+
+                                <strong>
+                                    #{order.customer.id}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="order-actions">
+
+                            <button
+                                className="view-btn"
+                            >
+                                View Details
+                            </button>
+
+
+                            {!order.status && (
+                                <button
+                                    className="confirm-btn"
                                 >
+                                    Confirm Order
+                                </button>
+                            )}
 
-                                    <div className="order-top">
-
-                                        <h2>
-                                            Order #{order.pk}
-                                        </h2>
-
-                                        <span
-                                            className={
-                                                order.status
-                                                    ? "status completed"
-                                                    : "status pending"
-                                            }
-                                        >
-                                            {
-                                                order.status
-                                                    ? "Completed"
-                                                    : "Pending"
-                                            }
-                                        </span>
-
-                                    </div>
-
-
-                                    <div className="order-body">
-
-                                        <div className="order-item">
-
-                                            <span>
-                                                Customer
-                                            </span>
-
-                                            <strong>
-                                                {
-                                                    order.customer.username
-                                                }
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div className="order-item">
-
-                                            <span>
-                                                Customer ID
-                                            </span>
-
-                                            <strong>
-                                                #{order.customer.id}
-                                            </strong>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    <div className="order-actions">
-
-                                        <button
-                                            className="view-btn"
-                                        >
-                                            View Details
-                                        </button>
-
-
-                                        {
-                                            !order.status && (
-
-                                                <button
-                                                    className="confirm-btn"
-                                                >
-                                                    Confirm Order
-                                                </button>
-
-                                            )
-                                        }
-
-                                    </div>
-
-                                </div>
-
-                            ))
-                        }
+                        </div>
 
                     </div>
 
-                )
-            }
+                ))}
+
+            </div>
 
 
-            {
-                data && (
-                    <Pagination
-                        next={data.links.next}
-                        previous={data.links.previous}
-                        loading={isFetching}
-                        onNext={() =>
-                            setPage(
-                                (prev) => prev + 1
-                            )
-                        }
-                        onPrevious={() =>
-                            setPage(
-                                (prev) => prev - 1
-                            )
-                        }
-                    />
-                )
-            }
+            {data && (
+                <Pagination
+                    next={data.links.next}
+                    previous={data.links.previous}
+                    loading={isFetching}
+                    onNext={() =>
+                        setPage(
+                            (prev) => prev + 1
+                        )
+                    }
+                    onPrevious={() =>
+                        setPage(
+                            (prev) => prev - 1
+                        )
+                    }
+                />
+            )}
 
         </div>
-
     );
 }
